@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "declaration": true,
+    "outDir": "dist"
   }
 }

@@ -1,24 +1,22 @@
-import { StoreApi, UseBoundStore } from "zustand";
+import { StoreApi, UseBoundStore, create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 const getStoreMapByKeys =
   <S extends Record<string, unknown>, K extends keyof S>(keys: K[]) =>
   (state: S) => {
-    return keys.reduce((acc, key) => {
-      acc[key] = state[key];
-      return acc;
-    }, {} as { [T in K]: S[T] });
-  };
+    if (keys.length === 0) return state;
 
-export type UseSelector<
-  TStore extends Record<string, unknown>,
-  TKey extends keyof TStore = keyof TStore
-> = (...keys: TKey[]) => Record<TKey, TStore[TKey]>;
+    const map = {} as { [T in K]: S[T] };
+    for (const key of keys) {
+      map[key] = state[key];
+    }
+    return map;
+  };
 
 export const createSelector = <TStore extends Record<string, unknown>>(
   store: UseBoundStore<StoreApi<TStore>>
 ) => {
-  const useSelector: UseSelector<TStore> = (...keys) =>
+  const useSelector = <Tkey extends keyof TStore>(...keys: Tkey[]) =>
     store(useShallow(getStoreMapByKeys(keys)));
   return useSelector;
 };
